@@ -44,27 +44,57 @@
   </div>
 </div>
 
+<?php
+// Setup Pagination
+$limit = 10; // Tampilkan 10 pegawai per halaman
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($page < 1) $page = 1;
+$offset = ($page - 1) * $limit;
+
+// Ambil total data
+$total_res = $conn->query("SELECT COUNT(*) as total FROM pegawai");
+$total_rows = $total_res->fetch_assoc()['total'];
+$total_pages = ceil($total_rows / $limit);
+
+// Ambil data untuk halaman ini
+$q = $conn->query("SELECT * FROM pegawai ORDER BY id DESC LIMIT $offset, $limit");
+?>
+
 <table class="table table-bordered table-striped">
   <thead class="table-dark">
     <tr><th>NIK</th><th>Nama</th><th>Unit</th><th>Golongan</th><th>Aksi</th></tr>
   </thead>
   <tbody>
-    <?php
-    $q = $conn->query("SELECT * FROM pegawai");
-    while ($row = $q->fetch_assoc()) {
-      echo "<tr>
-        <td>{$row['nik']}</td>
-        <td>{$row['nama']}</td>
-        <td>{$row['unit']}</td>
-        <td>{$row['golongan']}</td>
-       <td>
-        <a href='input_diklat.php?id={$row['id']}' class='btn btn-sm btn-success'>Input</a>
-        <a href='edit_pegawai.php?id={$row['id']}' class='btn btn-sm btn-warning'>Edit</a>
-        <a href='hapus_pegawai.php?id={$row['id']}' class='btn btn-sm btn-danger' onclick=\"return confirm('Yakin hapus pegawai ini?')\">Hapus</a>
-      </td>
-      </tr>";
-    }
-    ?>
+    <?php while ($row = $q->fetch_assoc()) { ?>
+      <tr>
+        <td><?= htmlspecialchars($row['nik']) ?></td>
+        <td><?= htmlspecialchars($row['nama']) ?></td>
+        <td><?= htmlspecialchars($row['unit']) ?></td>
+        <td><?= htmlspecialchars($row['golongan']) ?></td>
+        <td>
+          <a href='input_diklat.php?id=<?= $row['id'] ?>' class='btn btn-sm btn-success'>Input</a>
+          <a href='edit_pegawai.php?id=<?= $row['id'] ?>' class='btn btn-sm btn-warning'>Edit</a>
+          <a href='hapus_pegawai.php?id=<?= $row['id'] ?>' class='btn btn-sm btn-danger' onclick="return confirm('Yakin hapus pegawai ini?')">Hapus</a>
+        </td>
+      </tr>
+    <?php } ?>
   </tbody>
 </table>
+
+<!-- Navigasi Pagination -->
+<nav>
+  <ul class="pagination justify-content-center">
+    <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+      <a class="page-link" href="?page=<?= $page - 1 ?>">Sebelumnya</a>
+    </li>
+    <?php for ($i = 1; $i <= $total_pages; $i++) { ?>
+      <li class="page-item <?= $page == $i ? 'active' : '' ?>">
+        <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+      </li>
+    <?php } ?>
+    <li class="page-item <?= $page >= $total_pages ? 'disabled' : '' ?>">
+      <a class="page-link" href="?page=<?= $page + 1 ?>">Berikutnya</a>
+    </li>
+  </ul>
+</nav>
 <?php include 'layout/footer.php'; ?>

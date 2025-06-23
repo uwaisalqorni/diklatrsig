@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aplikasi Diklat</title>
+  <title>Aplikasi Diklat RSIG</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
@@ -12,9 +12,48 @@
     .sidebar .nav-link { color: #155724; }
     .sidebar .nav-link.active, .sidebar .nav-link:hover { background-color: #d4edda; font-weight: bold; }
     .card-icon { font-size: 2rem; }
+    .top-header {
+      background-color: #00a859;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .top-header img {
+      height: 48px;
+      margin-right: 10px;
+    }
+    .top-header .left {
+      display: flex;
+      align-items: center;
+    }
+    .top-header .left .title {
+      line-height: 1.2;
+    }
+    .top-header .left .title strong {
+      font-size: 18px;
+    }
+    .top-header .left .title small {
+      font-size: 14px;
+      color: #f7e91c;
+    }
   </style>
 </head>
 <body>
+<div class="top-header">
+  <div class="left">
+    <img src="assets/logo_rs.png" alt="Logo RSIG">
+    <div class="title">
+      <strong>Rumah Sakit Islam <span style="font-weight:bold;">Gondanglegi</span></strong><br>
+      <small>Kabupaten Malang</small>
+    </div>
+  </div>
+  <div class="right">
+    <i class="fa fa-user"></i> Administrator1
+  </div>
+</div>
+
 <div class="d-flex">
   <!-- Sidebar -->
   <div class="sidebar p-3">
