@@ -1,5 +1,30 @@
-<?php include 'koneksi.php'; include 'layout/header.php'; ?>
+<?php 
+include 'config/koneksi.php';
+// include 'tabel_pegawai.php';
+include 'layout/header.php';
+
+session_start();
+if (isset($_SESSION['sukses'])) {
+    echo "<div class='alert alert-success alert-dismissible fade show' role='alert'>
+            {$_SESSION['sukses']}
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+          </div>";
+    unset($_SESSION['sukses']);
+}
+
+?>
 <h2 class="mb-5">Master Data Pegawai</h2>
+
+<!-- Form Pencarian -->
+<form method="get" class="row mb-3">
+  <div class="col-md-4">
+    <input type="text" class="form-control" name="search" placeholder="Cari NIK atau Nama..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+  </div>
+  <div class="col-md-2">
+    <button type="submit" class="btn btn-outline-primary">Cari</button>
+    <a href="index.php" class="btn btn-outline-secondary">Reset</a>
+  </div>
+</form>
 
 <!-- Form Tambah dan Import -->
 <div class="row mb-4">
@@ -30,6 +55,7 @@
     </form>
   </div>
 
+
   <div class="col-md-4">
     <form method="post" action="import_pegawai.php" enctype="multipart/form-data" class="d-flex align-items-end gap-2 mb-2">
       <div class="flex-grow-1">
@@ -44,6 +70,16 @@
   </div>
 </div>
 
+<!-- <div class="row mb-4">
+    <div class="col-md-3">
+        <input type="text" class="form-control" name="search" placeholder="Cari Nama atau NIK" value="<?= $_GET['search'] ?? '' ?>">
+    </div>
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="index.php" class="btn btn-secondary">Reset</a>
+    </div>
+</div> -->
+
 <?php
 // Setup Pagination
 $limit = 10; // Tampilkan 10 pegawai per halaman
@@ -51,15 +87,22 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) $page = 1;
 $offset = ($page - 1) * $limit;
 
-// Ambil total data
-$total_res = $conn->query("SELECT COUNT(*) as total FROM pegawai");
+$search = $_GET['search'] ?? '';
+$search_sql = '';
+if (!empty($search)) {
+  $search_safe = $conn->real_escape_string($search);
+  $search_sql = "WHERE nik LIKE '%$search_safe%' OR nama LIKE '%$search_safe%'";
+}
+
+// Total data
+$total_res = $conn->query("SELECT COUNT(*) as total FROM pegawai $search_sql");
 $total_rows = $total_res->fetch_assoc()['total'];
 $total_pages = ceil($total_rows / $limit);
 
-// Ambil data untuk halaman ini
-$q = $conn->query("SELECT * FROM pegawai ORDER BY id DESC LIMIT $offset, $limit");
+// Data pegawai
+$q = $conn->query("SELECT * FROM pegawai $search_sql ORDER BY id DESC LIMIT $offset, $limit");
+$search_param = !empty($search) ? '&search=' . urlencode($search) : '';
 ?>
-
 <table class="table table-bordered table-striped">
   <thead class="table-dark">
     <tr><th>NIK</th><th>Nama</th><th>Unit</th><th>Golongan</th><th>Aksi</th></tr>
@@ -83,18 +126,39 @@ $q = $conn->query("SELECT * FROM pegawai ORDER BY id DESC LIMIT $offset, $limit"
 
 <!-- Navigasi Pagination -->
 <nav>
-  <ul class="pagination justify-content-center">
+  <ul class="pagination justify-content-center flex-wrap">
+    <!-- Tombol Sebelumnya -->
     <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
       <a class="page-link" href="?page=<?= $page - 1 ?>">Sebelumnya</a>
     </li>
-    <?php for ($i = 1; $i <= $total_pages; $i++) { ?>
-      <li class="page-item <?= $page == $i ? 'active' : '' ?>">
-        <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
-      </li>
-    <?php } ?>
+
+    <?php
+    $adjacents = 2; // jumlah halaman di kiri dan kanan halaman aktif
+
+    for ($i = 1; $i <= $total_pages; $i++) {
+      if (
+        $i == 1 || $i == $total_pages ||
+        ($i >= $page - $adjacents && $i <= $page + $adjacents)
+      ) {
+        if ($i == $page) {
+          echo "<li class='page-item active'><span class='page-link'>{$i}</span></li>";
+        } else {
+          echo "<li class='page-item'><a class='page-link' href='?page={$i}'>{$i}</a></li>";
+        }
+      } elseif (
+        $i == 2 && $page - $adjacents > 2 ||
+        $i == $total_pages - 1 && $page + $adjacents < $total_pages - 1
+      ) {
+        echo "<li class='page-item disabled'><span class='page-link'>...</span></li>";
+      }
+    }
+    ?>
+
+    <!-- Tombol Berikutnya -->
     <li class="page-item <?= $page >= $total_pages ? 'disabled' : '' ?>">
       <a class="page-link" href="?page=<?= $page + 1 ?>">Berikutnya</a>
     </li>
   </ul>
 </nav>
+
 <?php include 'layout/footer.php'; ?>
