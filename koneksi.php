@@ -1,6 +1,6 @@
 <?php
 // koneksi.php
-$host = 'localhost';
+$host = '';
 $user = 'root';
 $pass = 'bismillah';
 $db   = 'db_diklat';

@@ -1,6 +1,11 @@
 <?php
+session_start();
+if (!isset($_SESSION['login'])) {
+  header('Location: login.php');
+  exit;
+}
 require 'vendor/autoload.php'; // pastikan PhpSpreadsheet terinstall
-include 'koneksi.php';
+include 'config/koneksi.php';
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 

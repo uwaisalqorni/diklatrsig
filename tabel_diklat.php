@@ -1,4 +1,11 @@
 <?php
+
+if (!isset($_SESSION['login'])) {
+  header('Location: login.php');
+  exit;
+}
+
+
 include 'config/koneksi.php';
 require_once 'fungsi_perhitungan.php';
 
@@ -22,9 +29,11 @@ $res = $conn->query("SELECT diklat.*, pegawai.nama, pegawai.nik, pegawai.unit, p
                      JOIN pegawai ON diklat.id_pegawai = pegawai.id
                      $whereSql
                      ORDER BY diklat.id DESC");
+$no=1;
 while ($d = $res->fetch_assoc()) {
     $total_efektif = hitung_menit_diklat($d['golongan'], $d['jenis'], $d['durasi_menit']);
     echo "<tr>
+        <td>{$no}</td>
         <td>{$d['nama']} ({$d['nik']})</td>
         <td>{$d['unit']}</td>
         <td>{$d['golongan']}</td>
@@ -37,5 +46,6 @@ while ($d = $res->fetch_assoc()) {
             <a href='hapus_diklat.php?id={$d['id']}' class='btn btn-sm btn-danger' onclick=\"return confirm('Yakin hapus data ini?')\">Hapus</a>
         </td>
     </tr>";
+    $no++;
 }
 ?>

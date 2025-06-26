@@ -1,4 +1,9 @@
 <?php 
+session_start();
+if (!isset($_SESSION['login'])) {
+    header('Location: login.php');
+    exit;
+}
 include 'config/koneksi.php';
 require_once 'fungsi_perhitungan.php';
 include 'layout/header.php'; 
@@ -63,6 +68,7 @@ include 'layout/header.php';
 <table class="table table-bordered table-striped">
     <thead class="table-dark">
         <tr>
+            <th>No</th>
             <th>Pegawai</th>
             <th>Unit</th>
             <th>Golongan</th>

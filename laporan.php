@@ -1,5 +1,10 @@
 <?php
-include 'koneksi.php';
+session_start();
+if (!isset($_SESSION['login'])) {
+    header('Location: login.php');
+    exit;
+}
+include 'config/koneksi.php';
 require_once 'fungsi_perhitungan.php';
 include 'layout/header.php';
 
@@ -8,7 +13,7 @@ $filter_nama = $_GET['nama'] ?? '';
 $filter_unit = $_GET['unit'] ?? '';
 $filter_gol = $_GET['golongan'] ?? '';
 ?>
-<div class="container">
+
     <h2 class="mb-4">Laporan Total Jam Diklat</h2>
 
     <form method="get" class="row g-2 align-items-end mb-4">
@@ -43,6 +48,7 @@ $filter_gol = $_GET['golongan'] ?? '';
         <table class="table table-bordered table-striped align-middle text-center">
             <thead class="table-dark">
                 <tr>
+                    <th>No</th> <!-- Tambahan kolom nomor -->
                     <th>NIK</th>
                     <th>Nama</th>
                     <th>Unit</th>
@@ -69,6 +75,7 @@ $filter_gol = $_GET['golongan'] ?? '';
                 $whereSql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
                 $q = $conn->query("SELECT * FROM pegawai $whereSql");
+                $no = 1; // Nomor awal
                 while ($pegawai = $q->fetch_assoc()) {
                     $id = $pegawai['id'];
                     $gol = $pegawai['golongan'];
@@ -79,6 +86,7 @@ $filter_gol = $_GET['golongan'] ?? '';
                     }
                     $total_jam = round($total_menit / 45, 2);
                     echo "<tr>
+                        <td>$no</td> <!-- Cetak nomor -->
                         <td>{$pegawai['nik']}</td>
                         <td>{$pegawai['nama']}</td>
                         <td>{$pegawai['unit']}</td>
@@ -86,6 +94,7 @@ $filter_gol = $_GET['golongan'] ?? '';
                         <td>$total_menit</td>
                         <td>$total_jam</td>
                     </tr>";
+                    $no++;
                 }
                 ?>
             </tbody>
@@ -93,5 +102,5 @@ $filter_gol = $_GET['golongan'] ?? '';
     </div>
 
     <a href="index.php" class="btn btn-secondary mt-3">Kembali</a>
-</div>
+
 <?php include 'layout/footer.php'; ?>

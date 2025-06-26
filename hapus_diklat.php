@@ -1,6 +1,6 @@
 <!-- hapus_diklat.php -->
 <?php
-include 'koneksi.php';
+include 'config/koneksi.php';
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
     $conn->query("DELETE FROM diklat WHERE id = $id");

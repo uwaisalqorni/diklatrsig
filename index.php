@@ -1,9 +1,15 @@
 <?php 
+session_start();
+if (!isset($_SESSION['login'])) {
+    header('Location: login.php');
+    exit;
+}
+
 include 'config/koneksi.php';
 // include 'tabel_pegawai.php';
 include 'layout/header.php';
 
-session_start();
+
 if (isset($_SESSION['sukses'])) {
     echo "<div class='alert alert-success alert-dismissible fade show' role='alert'>
             {$_SESSION['sukses']}
@@ -101,15 +107,23 @@ $total_pages = ceil($total_rows / $limit);
 
 // Data pegawai
 $q = $conn->query("SELECT * FROM pegawai $search_sql ORDER BY id DESC LIMIT $offset, $limit");
+$no = $offset + 1;
 $search_param = !empty($search) ? '&search=' . urlencode($search) : '';
 ?>
 <table class="table table-bordered table-striped">
   <thead class="table-dark">
-    <tr><th>NIK</th><th>Nama</th><th>Unit</th><th>Golongan</th><th>Aksi</th></tr>
+    <tr>
+      <th>No</th>
+      <th>NIK</th>
+      <th>Nama</th>
+      <th>Unit</th>
+      <th>Golongan</th>
+      <th>Aksi</th></tr>
   </thead>
   <tbody>
     <?php while ($row = $q->fetch_assoc()) { ?>
       <tr>
+        <td><?= $no++ ?></td>
         <td><?= htmlspecialchars($row['nik']) ?></td>
         <td><?= htmlspecialchars($row['nama']) ?></td>
         <td><?= htmlspecialchars($row['unit']) ?></td>
@@ -120,6 +134,7 @@ $search_param = !empty($search) ? '&search=' . urlencode($search) : '';
           <a href='hapus_pegawai.php?id=<?= $row['id'] ?>' class='btn btn-sm btn-danger' onclick="return confirm('Yakin hapus pegawai ini?')">Hapus</a>
         </td>
       </tr>
+      
     <?php } ?>
   </tbody>
 </table>

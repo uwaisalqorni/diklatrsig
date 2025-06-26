@@ -1,13 +1,13 @@
 <?php
 // Bersihkan output buffer agar tidak merusak file Excel
+// Bersihkan output buffer
 ob_end_clean();
 
-// Aktifkan error reporting
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 require 'vendor/autoload.php';
-include 'koneksi.php';
+include 'config/koneksi.php';
 require_once 'fungsi_perhitungan.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -39,22 +39,52 @@ $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 $sheet->setTitle('Laporan Diklat');
 
-// Header kolom
-$headers = ['NIK', 'Nama', 'Unit', 'Golongan', 'Total Menit Efektif', 'Total Jam'];
-$sheet->fromArray($headers, NULL, 'A1');
+//tambahan 
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
-// Bold dan autosize kolom
-$style = $sheet->getStyle('A1:F1');
-$style->getFont()->setBold(true);
-$style->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+// Tambahkan logo (di kiri atas)
+$drawing = new Drawing();
+$drawing->setName('Logo');
+$drawing->setDescription('Logo');
+$drawing->setPath('assets/logo_rs.png'); // Ganti dengan path logo Anda
+$drawing->setHeight(70); // Tinggi logo (px)
+$drawing->setCoordinates('A1'); // Posisi sel awal
+$drawing->setOffsetX(10);
+$drawing->setOffsetY(10);
+$drawing->setWorksheet($sheet);
 
-foreach (range('A', 'F') as $col) {
+// Judul (merge cell dan style)
+$sheet->mergeCells('A1:G1');
+$sheet->mergeCells('A2:G2');
+$sheet->mergeCells('A3:G3');
+
+$sheet->setCellValue('A2', 'LAPORAN TOTAL JAM DIKLAT');
+$sheet->getStyle('A2')->getFont()->setBold(true)->setSize(14);
+$sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+
+
+// Header dengan kolom No
+$headers = ['No', 'NIK', 'Nama', 'Unit', 'Golongan', 'Total Menit Efektif', 'Total Jam'];
+$sheet->fromArray($headers, NULL, 'A5');
+
+// Gaya header
+$headerStyle = $sheet->getStyle('A5:G5');
+$headerStyle->getFont()->setBold(true);
+$headerStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('92D050');
+$headerStyle->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+$headerStyle->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+// Auto size kolom
+foreach (range('A', 'G') as $col) {
     $sheet->getColumnDimension($col)->setAutoSize(true);
 }
 
-// Isi data
+// Data isi
 $q = $conn->query("SELECT * FROM pegawai $whereSql");
-$rowNum = 2;
+$rowNum = 6;
+$no = 1;
+
 while ($pegawai = $q->fetch_assoc()) {
     $id = $pegawai['id'];
     $gol = $pegawai['golongan'];
@@ -67,6 +97,7 @@ while ($pegawai = $q->fetch_assoc()) {
     $total_jam = round($total_menit / 45, 2);
 
     $sheet->fromArray([
+        $no++,
         $pegawai['nik'],
         $pegawai['nama'],
         $pegawai['unit'],
@@ -75,9 +106,16 @@ while ($pegawai = $q->fetch_assoc()) {
         $total_jam
     ], NULL, 'A' . $rowNum);
 
+    // Tambahkan border setiap baris data
+    $sheet->getStyle("A{$rowNum}:G{$rowNum}")
+        ->getBorders()
+        ->getAllBorders()
+        ->setBorderStyle(Border::BORDER_THIN);
+
     $rowNum++;
 }
 
+// Output
 $filename = 'Laporan_Diklat_' . date('Ymd_His') . '.xlsx';
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 header("Content-Disposition: attachment; filename=\"$filename\"");

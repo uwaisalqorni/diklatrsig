@@ -1,5 +1,6 @@
 <?php
-include 'koneksi.php';
+
+include 'config/koneksi.php';
 include 'layout/header.php';
 
 // Ambil ID dari parameter URL
@@ -44,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 
-<div class="container">
+
   <h2 class="mb-4">Edit Data Pegawai</h2>
   <form method="post" class="row g-3">
     <div class="col-md-3">
@@ -71,6 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       <a href="index.php" class="btn btn-secondary">Batal</a>
     </div>
   </form>
-</div>
+
 
 <?php include 'layout/footer.php'; ?>
