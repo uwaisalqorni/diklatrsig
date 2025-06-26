@@ -43,6 +43,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       background: #fff;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    .login-box img {
+      max-width: 100px;
+      margin-bottom: 15px;
     }
     .login-box h3 {
       color: #198754;
@@ -53,18 +58,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
 
 <div class="login-box">
-  <h3 class="text-center">Login Aplikasi Diklat RSIG</h3>
+  <!-- Ganti path berikut dengan lokasi gambar logo kamu -->
+  <img src="assets/logo_rs.png" alt="Logo RSIG">
 
-  <?php if ($pesan_error): ?>
+  <h3>Login Aplikasi Diklat RSIG</h3>
+
+  <?php if (!empty($pesan_error)): ?>
     <div class="alert alert-danger"><?= htmlspecialchars($pesan_error) ?></div>
   <?php endif; ?>
 
   <form method="post">
-    <div class="mb-3">
+    <div class="mb-3 text-start">
       <label for="username" class="form-label">Username</label>
       <input type="text" class="form-control" id="username" name="username" required autofocus>
     </div>
-    <div class="mb-3">
+    <div class="mb-3 text-start">
       <label for="password" class="form-label">Password</label>
       <input type="password" class="form-control" id="password" name="password" required>
     </div>
@@ -74,3 +82,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 </body>
 </html>
+
