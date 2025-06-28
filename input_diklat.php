@@ -40,13 +40,19 @@ include 'layout/header.php';
         <label class="form-label">Masukkan Durasi (menit)</label>
         <input type="number" name="durasi_menit" class="form-control" required>
     </div>
+    <div class="col-md-2">
+        <label class="form-label">Tanggal & Waktu Diklat</label>
+        <input type="datetime-local" name="created_at" class="form-control" required>
+    </div>
+  
     <div class="col-12">
         <button type="submit" class="btn btn-primary">Simpan</button>
         <a href="index.php" class="btn btn-secondary">Kembali</a>
     </div>
 </form>
+    
 
-<form method="get" class="row g-3 mb-6">
+<form method="get" class="row g-3 mb-4">
     <div class="col-md-3">
         <input type="text" class="form-control" name="search" placeholder="Cari Nama atau NIK" value="<?= $_GET['search'] ?? '' ?>">
     </div>
@@ -58,11 +64,23 @@ include 'layout/header.php';
             <option value="olahraga" <?= ($_GET['filter_jenis'] ?? '') == 'olahraga' ? 'selected' : '' ?>>Olahraga</option>
         </select>
     </div>
+    <div class="col-md-2">
+        <input type="date" name="tanggal_awal" class="form-control" value="<?= $_GET['tanggal_awal'] ?? '' ?>">
+    </div>
+    <div class="col-md-2">
+        <input type="date" name="tanggal_akhir" class="form-control" value="<?= $_GET['tanggal_akhir'] ?? '' ?>">
+    </div>
     <div class="col-md-3">
         <button type="submit" class="btn btn-primary">Filter</button>
         <a href="input_diklat.php" class="btn btn-secondary">Reset</a>
     </div>
+    <div class="col-12 mt-2 text-end">
+        <a href="export_diklat_excel.php?<?= http_build_query($_GET) ?>" class="btn btn-success">
+            <i class="fas fa-file-excel"></i> Export Excel
+        </a>
+    </div>
 </form>
+
 
 <h3>Riwayat Data Diklat</h3>
 <table class="table table-bordered table-striped">
@@ -74,6 +92,7 @@ include 'layout/header.php';
             <th>Golongan</th>
             <th>Jenis</th>
             <th>Nama Diklat</th>
+            <th>Waktu & Tanggal</th>
             <th>Durasi (menit)</th>
             <th>Total Efektif</th>
             <th>Aksi</th>

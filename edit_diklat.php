@@ -1,5 +1,4 @@
 <?php
-// edit_diklat.php
 include 'config/koneksi.php';
 include 'layout/header.php';
 
@@ -12,6 +11,9 @@ if ($q->num_rows == 0) {
     exit;
 }
 $d = $q->fetch_assoc();
+
+// Format created_at untuk input datetime-local
+$created_at_formatted = date('Y-m-d\TH:i', strtotime($d['created_at']));
 ?>
 
 <div class="container">
@@ -43,8 +45,14 @@ $d = $q->fetch_assoc();
             <input type="number" name="durasi_menit" class="form-control" value="<?= $d['durasi_menit'] ?>" required>
         </div>
 
+        <div class="mb-3">
+            <label class="form-label">Tanggal & Waktu Diklat</label>
+            <input type="datetime-local" name="created_at" class="form-control" value="<?= $created_at_formatted ?>" required>
+        </div>
+
         <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
         <a href="input_diklat.php" class="btn btn-secondary">Kembali</a>
     </form>
 </div>
+
 <?php include 'layout/footer.php'; ?>
